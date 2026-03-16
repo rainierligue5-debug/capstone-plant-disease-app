@@ -4,15 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI-Based Corn Leaf Disease Detection</title>
-    <link rel="icon" href="../static/images/logo.svg" type="image/svg+xml">
-    <link rel="stylesheet" href="../static/css/bootstrap.min.css">
-    <link rel="stylesheet" href="../static/css/style.css">
+    <link rel="icon" href="{{ url_for('static', filename='images/logo.svg') }}" type="image/svg+xml">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='chatbot/chatbot.css') }}">
 </head>
 <body>
     <nav class="navbar navbar-expand-lg bg-body-tertiary" data-bs-theme="dark">
         <div class="container-fluid">
           <a class="navbar-brand" href="#">
-            <img src="../static/images/logo.svg" alt="" width="30" height="24" class="d-inline-block align-text-top">
+            <img src="{{ url_for('static', filename='images/logo.svg') }}" alt="" width="30" height="24" class="d-inline-block align-text-top">
             PHASAL
           </a>
         </div>
@@ -21,7 +22,7 @@
     <div class="carousel-inner">
         <div class="carousel-item active">
             <div class="carousel-text-wrapper">
-                <h1 class="carousel-text-title">Plant Disease Recognition</h1>
+                <h1 class="carousel-text-title">Corn Disease Recognition</h1>
                 <div class="form-box">
                   <form action="/upload/" method="POST" enctype="multipart/form-data">
                     <h1>Upload Image</h1>
@@ -53,6 +54,10 @@
         </div>
     </div>
 
-    <script src="../static/js/bootstrap.bundle.min.js"></script>
+    <!-- CHATBOT -->
+    {% include 'chatbot.html' %}
+
+    <script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='chatbot/chatbot.js') }}"></script>
 </body>
 </html>

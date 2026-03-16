@@ -1,9 +1,10 @@
-from flask import Flask, render_template, request, redirect, send_from_directory
+from flask import Flask, render_template, request, redirect, send_from_directory, jsonify
 import numpy as np
 import uuid
 import tensorflow as tf
 import json
 import os
+import requests
 from tensorflow.keras.applications.efficientnet import preprocess_input
 
 app = Flask(__name__)
@@ -13,7 +14,6 @@ model = tf.keras.models.load_model("models/plant_disease_corn_mobilenet.keras")
 
 # Only Corn classes
 labels = ['Blight', 'Common_Rust', 'Gray_Leaf_Spot', 'Healthy']
-
 
 # Load disease info JSON
 with open("plant_disease.json", "r") as f:
@@ -78,5 +78,50 @@ def uploadimage():
     else:
         return redirect('/')
 
+# ---------------- AI CHATBOT ROUTE ----------------
+@app.route('/ai-chat', methods=['POST'])
+def ai_chat():
+    try:
+        # Get the message from JSON
+        user_message = request.json.get("message")
+        if not user_message:
+            return jsonify({"reply": "No message received."})
+
+        # OpenRouter API request
+        headers = {
+            "Authorization": "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",
+            "Content-Type": "application/json"
+        }
+
+        data = {
+            "model": "mistralai/mistral-7b-instruct",
+            "messages": [{"role": "user", "content": user_message}]
+        }
+
+        response = requests.post(
+            "https://openrouter.ai/api/v1/chat/completions",
+            headers=headers,
+            json=data,
+            timeout=10
+        )
+
+        # Parse JSON safely
+        result = response.json()
+        # Debug: print the full response to console
+        print("OpenRouter Response:", json.dumps(result, indent=2))
+
+        # Safely get the reply
+        reply = "Sorry, I couldn't get a response."
+        choices = result.get("choices")
+        if choices and len(choices) > 0:
+            message_obj = choices[0].get("message")
+            if message_obj:
+                reply = message_obj.get("content", reply)
+
+        return jsonify({"reply": reply})
+
+    except Exception as e:
+        print("Chatbot error:", e)
+        return jsonify({"reply": "Sorry, I couldn't process your request."})
 if __name__ == "__main__":
     app.run(debug=True)
